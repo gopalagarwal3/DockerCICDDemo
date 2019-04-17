@@ -1,6 +1,11 @@
 pipeline {
   agent any
   stages {
+    stage('Checkout code') {
+        steps {
+				checkout([$class: 'GitSCM', branches: [[name: "develop"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'Jenkins-Github', url: "https://github.com/gopalagarwal3/DockerCICDDemo.git"]]])
+            }
+        }
     stage('Docker pull images') {
 		  steps {
 			withDockerRegistry(credentialsId: 'JenkinsDockerHub', url:'') {
