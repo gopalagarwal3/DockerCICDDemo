@@ -1,54 +1,24 @@
 pipeline {
-  agent {
-    node {
-      label 'ubuntu-1604-aufs-stable'
-    }
-  }
+  agent any
   stages {
-    stage('Build result') {
+    stage('Checkout code') {
+        steps {
+				checkout([$class: 'GitSCM', branches: [[name: "master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'Jenkins-Github', url: "https://github.com/dockersamples/example-voting-app.git"]]])
+            }
+        }
+    stage('Build docker images') {
       steps {
-        sh 'docker build -t dockersamples/result ./result'
-      }
-    } 
-    stage('Build vote') {
-      steps {
-        sh 'docker build -t dockersamples/vote ./vote'
-      }
-    }
-    stage('Build worker') {
-      steps {
-        sh 'docker build -t dockersamples/worker ./worker'
+        sh 'docker-compose build'
       }
     }
     stage('Push result image') {
-      when {
-        branch 'master'
-      }
-      steps {
-        withDockerRegistry(credentialsId: 'dockerbuildbot-index.docker.io', url:'') {
-          sh 'docker push dockersamples/result'
-        }
-      }
-    }
-    stage('Push vote image') {
-      when {
-        branch 'master'
-      }
-      steps {
-        withDockerRegistry(credentialsId: 'dockerbuildbot-index.docker.io', url:'') {
-          sh 'docker push dockersamples/vote'
-        }
-      }
-    }
-    stage('Push worker image') {
-      when {
-        branch 'master'
-      }
-      steps {
-        withDockerRegistry(credentialsId: 'dockerbuildbot-index.docker.io', url:'') {
-          sh 'docker push dockersamples/worker'
-        }
-      }
+		  steps {
+			withDockerRegistry(credentialsId: 'JenkinsDockerHub', url:'') {
+			  sh 'docker push gopalagarwal/result'
+			  sh 'docker push gopalagarwal/vote '
+			  sh 'docker push gopalagarwal/worker'
+			}
+		}
     }
   }
 }

@@ -3,7 +3,8 @@ version: "3"
 services:
   vote:
     build: ./vote
-    command: python app.py
+    image: gopalagarwal/vote:latest
+    #command: python app.py
     volumes:
      - ./vote:/app
     ports:
@@ -14,6 +15,7 @@ services:
 
   result:
     build: ./result
+    image: gopalagarwal/result:latest
     command: nodemon server.js
     volumes:
       - ./result:/app
@@ -27,6 +29,7 @@ services:
   worker:
     build:
       context: ./worker
+    image: gopalagarwal/worker:latest
     depends_on:
       - "redis"
     networks:
