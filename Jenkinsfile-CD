@@ -1,0 +1,21 @@
+pipeline {
+  agent any
+  stages {
+    stage('Docker pull images') {
+		  steps {
+			withDockerRegistry(credentialsId: 'JenkinsDockerHub', url:'') {
+			  sh 'docker pull gopalagarwal/result'
+			  sh 'docker pull gopalagarwal/vote '
+			  sh 'docker pull gopalagarwal/worker'
+			}
+		}
+    }
+    stage('Run') {
+		  steps {
+			withDockerRegistry(credentialsId: 'JenkinsDockerHub', url:'') {
+			  sh 'docker-compose -f docker-compose-cd.yml up'
+			}
+		}
+    }
+  }
+}
